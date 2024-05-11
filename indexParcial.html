@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primer Parcial</title>
+    
+    <style>
+
+
+        body{
+            background: grey;
+            font-family: system-ui, 'Open Sans', 'Helvetica Neue', sans-serif;
+            
+        }
+
+        .formDatos{
+            display: flex;
+            border: solid; 
+            border-color: black;
+            padding: 5px;
+            margin-top: 5px;
+            align-items: center;
+            flex-direction: column;
+        }
+        .checkboxesFormDatos{
+            display: flex;
+            flex-direction: row;
+        }   
+
+        .tablaForm{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tabla{
+            table-layout: fixed;
+            border: 2px solid black;
+            border-collapse: collapse;           
+    
+        }
+
+       
+
+        th, td {
+            border: 1px solid black; /* Borde sólido de 1px alrededor de las celdas */
+            padding: 8px;
+            text-align: left;
+        }
+
+        .formABM{
+
+            display: flex;
+            border: solid; 
+            border-color: black;
+            padding: 5px;
+            margin-top: 5px;
+            flex-direction: column;
+            align-items: center;
+        }
+        .formABMInputs{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .formABMBotones{
+            display: flex;
+            justify-content: space-around;
+            align-content: space-around;
+        }
+
+        .formABMBotones button{
+            margin: 0 10px;
+        }
+            
+    </style>
+
+   
+</head>
+
+<body>
+    <form class="formDatos">
+        <div class="formDatosLabels">
+            <p1>Form Datos</p1>
+            <br>
+            <label>Filtrar Por:</label>
+            <select id="filtroSelect" onchange="mostrarFilas(this.value)">
+                <option value="filtroTodos">Todos</option>
+                <option value="filtroExtranjero">Extranjeros</option>
+                <option value="filtroCiudadano">Ciudadanos</option>
+            </select>
+            <br>
+            <div>
+                <label>Calcular Edad Promedio:
+                    <input id="inputCalcEdadPromedio">
+                    <button id="btnCalcEdadPromedio" onclick="calcularEdadPromedio(); return false;">Calcular</button>
+                </label>
+            </div>
+        </div>
+        <div class="checkboxesFormDatos">
+            <label>Mostrar columnas:
+                <br>
+                <label>
+                    <input type="checkbox" name ="ID">
+                    ID
+                </label>
+                <label>
+                    <input type="checkbox">
+                    Nombre
+                </label>
+                <label>
+                    <input type="checkbox">
+                    Apellido
+                </label>
+                <label>
+                    <input type="checkbox">
+                    Edad
+                </label>
+                <label>
+                    <input type="checkbox">
+                    DNI
+                </label>
+                <label>
+                    <input type="checkbox">
+                    Pais Origen
+                </label>
+                
+                
+            </label>
+        </div>
+        <div class="tablaForm">
+            <table class="tablaPersonas">
+                <thead>
+                    <tr>
+                    <th>
+                        <button id="btnID_formDatos">ID</button>
+                    </th>
+                    <th>
+                        <button id="btnNombre_formDatos">Nombre</button>
+                    </th>
+                    <th>
+                        <button id="btnApellido_formDatos">Apellido</button>
+                    </th>
+                    <th>
+                        <button id="btnEdad_formDatos">Edad</button>
+                    </th>
+                    <th>
+                        <button id="btnDNI_formDatos">DNI</button>
+                    </th>
+                    <th>
+                        <button id="btnPais_formDatos">Pais Origen</button>
+                    </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                    </tr>      
+                </tbody>
+
+            </table>
+        </div>
+        <br>
+        <button onclick="ocultarFormDatos(); return false;">Agregar</button>
+    </form> 
+    
+    <form class="formABM">
+        
+        <div class="formABMInputs">
+            <h1>Formulario ABM</h1>
+            <label>ID: 
+                <input id="inputID_ABM">
+            </label>
+            <br>
+            <label>Fecha Nacimiento (AAAAMMDD):
+                <input id="inputFecha_ABM">
+            </label>
+            <br>
+            <label>Nombre:
+                <input id="inputNombre_ABM">
+            </label>
+            <br>
+            <label>Apellido:
+                <input id="inputApellido_ABM">
+            </label>
+            <br>
+            <label>Tipo: </label>
+            <select id="filtroTipoABM">
+                <option value="filtroCiudadanos">Ciudadanos</option>
+                <option value="filtroExtranjeros">Extranjeros</option>
+            </select>
+            <br>
+            <label>DNI / PAIS Origen:
+                <input id="inputDniPais_ABM">
+            </label>
+            <br>
+        </div>
+        <div class="formABMBotones">
+            
+            <button id="btnCrearABM" onclick="crearPersona(); return false;">Crear</button>
+            <button id="btnModificarABM" onclick="modificarPersona(); return false;">Modificar</button>
+            <button id="btnEliminarABM" onclick="eliminarPersona(); return false;">Eliminar</button>
+            <button id="btnCancelarABM">Cancelar</button>
+            
+        </div>
+
+    </form> 
+
+
+    <script>
+
+        var cadena = '[{"id":1,"apellido":"Serrano","nombre":"Horacio","fechaNacimiento":19840103,"dni":45876942},{"id":2,"apellido":"Casas","nombre":"Julian","fechaNacimiento":19990723,"dni":98536214},{"id":3,"apellido":"Galeano","nombre":"Julieta","fechaNacimiento":20081103,"dni":74859612},{"id":4,"apellido":"Molina","nombre":"Juana","fechaNacimiento":19681201,"paisOrigen":"Paraguay"},{"id":5,"apellido":"Barrichello","nombre":"Rubens","fechaNacimiento":19720523,"paisOrigen":"Brazil"},{"id":666,"apellido":"Hkkinen","nombre":"Mika","fechaNacimiento":19680928,"paisOrigen":"Finlandia"}]';
+        var objetos = JSON.parse(cadena);
+
+        class Persona {
+            constructor(id, nombre, apellido, fechaNacimiento) {
+                this.id = id;
+                this.nombre = nombre;
+                this.apellido = apellido;
+                this.fechaNacimiento = fechaNacimiento;
+            }
+    
+        }
+
+        class Ciudadano extends Persona {
+            constructor(id, nombre, apellido, fechaNacimiento, dni) {
+                super(id, nombre, apellido, fechaNacimiento);
+                this.dni = dni; 
+                
+            }    
+
+            calcularEdad(){
+                
+                let fechaNacimientoStr = this.fechaNacimiento.toString();
+                
+                let anioNacimiento = parseInt(fechaNacimientoStr.substring(0, 4)); 
+                let anioActual = new Date().getFullYear();
+                let edad = anioActual - anioNacimiento;
+
+                return edad;
+            }    
+        }
+
+        class Extranjero extends Persona {
+            constructor(id, nombre, apellido, fechaNacimiento, paisOrigen) {
+                super(id, nombre, apellido, fechaNacimiento);
+                this.paisOrigen = paisOrigen;  
+            
+            }     
+            
+            calcularEdad(){
+                
+                let fechaNacimientoStr = this.fechaNacimiento.toString();
+                let anioNacimiento = parseInt(fechaNacimientoStr.substring(0, 4));
+                let anioActual = new Date().getFullYear();
+                let edad = anioActual - anioNacimiento;
+
+                return edad;
+            }  
+            
+        }
+    
+        const anioActual = 2024;
+        const filtro = document.getElementById("filtroSelect");
+        const btnCalcEdadPromedio = document.getElementById('btnCalcEdadPromedio');
+        const ciudadanos = [];
+        const extranjeros = [];
+        const personas = objetos.map(crearPersonas);
+        const formDataDiv = document.getElementsByClassName('formDatos')[0];
+        const formABM = document.getElementsByClassName('formABM');
+        const inputFecha_ABM = document.getElementById("inputFecha_ABM");
+        const inputNombre_ABM = document.getElementById("inputNombre_ABM");
+        const inputApellido_ABM= document.getElementById("inputApellido_ABM");
+        const inputTipo_ABM = document.getElementById("inputTipo_ABM");
+        const inputDniPais_ABM = document.getElementById("inputDniPais_ABM");
+        const filtroTipoABM = document.getElementById("filtroTipoABM");
+        const inputID_ABM = document.getElementById("inputID_ABM");
+        const btnEliminarABM = document.getElementById("btnEiminarABM")
+        let contadorID = 1000;
+        
+
+        function generarId() {
+            const nuevoId = contadorID;
+            contadorID++;
+            return nuevoId;
+        }
+      
+        function crearPersonas(objeto){
+
+            var persona; 
+
+            if('dni' in objeto){
+                persona = new Ciudadano(objeto.id, objeto.nombre, objeto.apellido, objeto.fechaNacimiento, objeto.dni);
+                ciudadanos.push(persona);
+            }else if('paisOrigen' in objeto){
+                persona = new Extranjero(objeto.id, objeto.nombre, objeto.apellido, objeto.fechaNacimiento, objeto.paisOrigen);
+                extranjeros.push(persona);
+            }else{
+                persona = new Persona(objeto.id, objeto.nombre, objeto.apellido, objeto.fechaNacimiento);
+            }
+            
+            return persona;
+        }
+      
+        function mostrarFilas(valorSeleccionado) {
+
+
+            // Obtener el cuerpo de la tabla
+            var tablaBody = document.querySelector(".tablaForm .tablaPersonas tbody");
+        
+            // Limpiar la tabla por si tiene datos anteriores
+            tablaBody.innerHTML = "";
+            
+            // Iterar sobre cada persona en el array `personas`
+            personas.forEach(function(persona) {
+                // Crear una nueva fila
+                var fila = document.createElement("tr");
+
+                if(valorSeleccionado == "filtroTodos"){
+                    fila.innerHTML = `
+                    <td>${persona.id}</td>
+                    <td>${persona.nombre}</td>
+                    <td>${persona.apellido}</td>
+                    <td>${persona.fechaNacimiento}</td>
+                    <td>${persona.dni || "--"}</td>
+                    <td>${persona.paisOrigen || "--"}</td>
+                    `;
+
+                }else if(valorSeleccionado == "filtroCiudadano"){
+                    if(persona instanceof Ciudadano){
+                        fila.innerHTML = `
+                        <td>${persona.id}</td>
+                        <td>${persona.nombre}</td>
+                        <td>${persona.apellido}</td>
+                        <td>${persona.fechaNacimiento}</td>
+                        <td>${persona.dni || "--"}</td>
+                        <td>${persona.paisOrigen || "--"}</td>
+                        `;
+                    }
+                }else if(valorSeleccionado == "filtroExtranjero"){
+                    if(persona instanceof Extranjero){
+                        fila.innerHTML = `
+                        <td>${persona.id}</td>
+                        <td>${persona.nombre}</td>
+                        <td>${persona.apellido}</td>
+                        <td>${persona.fechaNacimiento}</td>
+                        <td>${persona.dni || "--"}</td>
+                        <td>${persona.paisOrigen || "--"}</td>
+                        `;
+                    }
+                }  
+
+
+                tablaBody.appendChild(fila);
+                
+                fila.addEventListener("dblclick", function() {
+                    ocultarFormDatos();
+                    mostrarDatosFormABM(persona); 
+                    
+                });
+
+            });
+
+            document.querySelector(".tablaForm .tablaPersonas").style.display = "table"; 
+        }
+
+        document.querySelector(".tablaForm .tablaPersonas").addEventListener("dblclick", ocultarFormDatos);
+        
+
+        function ocultarFormDatos(){
+            document.querySelector(".formDatos").style.display = "none";
+        }
+
+
+        function mostrarDatosFormABM(persona) {
+
+            inputID_ABM.value = persona.id;
+            inputFecha_ABM.value = persona.fechaNacimiento;
+            inputNombre_ABM.value = persona.nombre;
+            inputApellido_ABM.value = persona.apellido;
+            if(persona instanceof Ciudadano){
+                // inputTipo_ABM.value = "Ciudadano";
+                inputDniPais_ABM.value  = persona.dni;
+            }
+            else if(persona instanceof Extranjero){
+                // inputTipo_ABM.value = "Extranjero";
+                inputDniPais_ABM.value  = persona.paisOrigen;
+            }
+            
+
+        }
+
+
+        function crearPersona(){
+
+            
+            const fechaNacimiento = inputFecha_ABM.value;
+            const nombre = inputNombre_ABM.value;
+            const apellido = inputApellido_ABM.value;
+            const tipo = filtroTipoABM.value;
+            const dniPais = inputDniPais_ABM.value;
+
+            let persona;
+            if(inputFecha_ABM.value == '' || inputNombre_ABM == '' || inputApellido_ABM.value == '' || inputDniPais_ABM.value == ''){
+
+                alert("NO PUEDEN HABER CAMPOS VACIOS");
+
+            }else if (tipo === "filtroCiudadanos"){
+
+                id = generarId();
+                persona = new Ciudadano(id, nombre, apellido, fechaNacimiento, dniPais);
+                ciudadanos.push(persona);
+                personas.push(persona);
+            }
+            else{
+                id = generarId();
+                persona = new Extranjero(id, nombre, apellido,fechaNacimiento,dniPais)
+                extranjeros.push(persona);
+                personas.push(persona);
+            
+            }
+            console.log(persona)
+        }
+
+
+        function modificarPersona(){
+            const id_input = inputID_ABM.value;
+            const fechaNacimiento = inputFecha_ABM.value;
+            const nombre = inputNombre_ABM.value;
+            const apellido = inputApellido_ABM.value;
+            const tipo = filtroTipoABM.value;
+            const dniPais = inputDniPais_ABM.value;
+
+
+            if(inputFecha_ABM.value == '' || inputNombre_ABM == '' || inputApellido_ABM.value == '' || inputDniPais_ABM.value == ''){
+
+                alert("NO PUEDEN HABER CAMPOS VACIOS");
+
+            }else {
+
+                const id = Number(inputID_ABM.value);
+                const personaAModificar = personas.find(persona => persona.id === id);
+    
+                if (!personaAModificar) {
+                    alert("No se encontró una persona con el ID proporcionado");
+                    return;
+                }
+            
+                personaAModificar.fechaNacimiento = fechaNacimiento;
+                personaAModificar.nombre = nombre;
+                personaAModificar.apellido = apellido;
+                if (tipo === "filtroCiudadanos" && personaAModificar instanceof Ciudadano) {
+                    personaAModificar.dni = dniPais;
+                } else if (tipo === "filtroExtranjeros" && personaAModificar instanceof Extranjero) {
+                    personaAModificar.paisOrigen = dniPais;
+                } else {
+                    alert("El tipo de persona no coincide con la selección o no se puede cambiar el tipo de persona existente");
+                    return;
+                }
+
+                console.log("Persona modificada:", personaAModificar);
+            }
+
+                        
+        }
+
+        function eliminarPersona(){
+
+            const id = Number(inputID_ABM.value);
+            const index = personas.findIndex(persona => persona.id === id);
+            
+            if (index !== -1) {
+                personas.splice(index, 1);
+                console.log("Persona eliminada exitosamente");
+            } else {
+                console.log("No se encontró una persona con el ID proporcionado");
+            }
+        
+        }
+
+        
+        function calcularEdadPromedio(){
+            
+            let promedio = 0;
+
+            if(filtro.value == 'filtroTodos')
+            {
+                let promedioCiudadanos = ciudadanos.reduce((suma, ciudadano) => suma + ciudadano.calcularEdad(), 0) / ciudadanos.length;
+                let promedioExtranjeros = extranjeros.reduce((suma, extranjero) => suma + extranjero.calcularEdad(), 0) / extranjeros.length;
+                promedio = (promedioCiudadanos + promedioExtranjeros) / 2;
+            }
+            if (filtro.value =='filtroCiudadano') {
+                promedio = ciudadanos.reduce((suma, ciudadano) => suma + ciudadano.calcularEdad(), 0) / ciudadanos.length;
+            } 
+            else if(filtro.value =='filtroExtranjero') {
+                promedio = extranjeros.reduce((suma, extranjero) => suma + extranjero.calcularEdad(), 0) / extranjeros.length;
+            }
+            
+            alert("El promedio es: " + promedio);
+        }  
+
+
+    </script>
+
+</body>
+</html>
