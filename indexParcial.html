@@ -41,7 +41,6 @@
     
         }
 
-       
 
         th, td {
             border: 1px solid black; /* Borde sólido de 1px alrededor de las celdas */
@@ -76,13 +75,24 @@
             margin: 0 10px;
         }
             
+        .hidden {
+            display: none;
+        }
+
+        .visible {
+            display: flex;
+        }
+
+        .formDatos.visible, .formABM.visible {
+            display: flex;
+        }
     </style>
 
    
 </head>
 
 <body>
-    <form class="formDatos">
+    <form class="formDatos visible">
         <div class="formDatosLabels">
             <p1>Form Datos</p1>
             <br>
@@ -104,27 +114,27 @@
             <label>Mostrar columnas:
                 <br>
                 <label>
-                    <input type="checkbox" name ="ID">
+                    <input type="checkbox" name ="id" checked>
                     ID
                 </label>
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" name="nombre" checked>
                     Nombre
                 </label>
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" name="apellido" checked>
                     Apellido
                 </label>
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" name="edad" checked>
                     Edad
                 </label>
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" name="dni" checked>
                     DNI
                 </label>
                 <label>
-                    <input type="checkbox">
+                    <input type="checkbox" name="paisOrigen" checked>
                     Pais Origen
                 </label>
                 
@@ -166,7 +176,7 @@
         <button onclick="ocultarFormDatos(); return false;">Agregar</button>
     </form> 
     
-    <form class="formABM">
+    <form class="formABM hidden">
         
         <div class="formABMInputs">
             <h1>Formulario ABM</h1>
@@ -202,7 +212,7 @@
             <button id="btnCrearABM" onclick="crearPersona(); return false;">Crear</button>
             <button id="btnModificarABM" onclick="modificarPersona(); return false;">Modificar</button>
             <button id="btnEliminarABM" onclick="eliminarPersona(); return false;">Eliminar</button>
-            <button id="btnCancelarABM">Cancelar</button>
+            <button id="btnCancelarABM" onclick="cancelarABM(); return false;">Cancelar</button>
             
         </div>
 
@@ -237,7 +247,7 @@
                 
                 let anioNacimiento = parseInt(fechaNacimientoStr.substring(0, 4)); 
                 let anioActual = new Date().getFullYear();
-                let edad = anioActual - anioNacimiento;
+                edad = anioActual - anioNacimiento;
 
                 return edad;
             }    
@@ -246,8 +256,8 @@
         class Extranjero extends Persona {
             constructor(id, nombre, apellido, fechaNacimiento, paisOrigen) {
                 super(id, nombre, apellido, fechaNacimiento);
-                this.paisOrigen = paisOrigen;  
-            
+                this.paisOrigen = paisOrigen;
+                            
             }     
             
             calcularEdad(){
@@ -255,7 +265,7 @@
                 let fechaNacimientoStr = this.fechaNacimiento.toString();
                 let anioNacimiento = parseInt(fechaNacimientoStr.substring(0, 4));
                 let anioActual = new Date().getFullYear();
-                let edad = anioActual - anioNacimiento;
+                edad = anioActual - anioNacimiento;
 
                 return edad;
             }  
@@ -269,7 +279,6 @@
         const extranjeros = [];
         const personas = objetos.map(crearPersonas);
         const formDataDiv = document.getElementsByClassName('formDatos')[0];
-        const formABM = document.getElementsByClassName('formABM');
         const inputFecha_ABM = document.getElementById("inputFecha_ABM");
         const inputNombre_ABM = document.getElementById("inputNombre_ABM");
         const inputApellido_ABM= document.getElementById("inputApellido_ABM");
@@ -277,7 +286,8 @@
         const inputDniPais_ABM = document.getElementById("inputDniPais_ABM");
         const filtroTipoABM = document.getElementById("filtroTipoABM");
         const inputID_ABM = document.getElementById("inputID_ABM");
-        const btnEliminarABM = document.getElementById("btnEiminarABM")
+        const btnEliminarABM = document.getElementById("btnEiminarABM");
+       
         let contadorID = 1000;
         
 
@@ -306,17 +316,28 @@
       
         function mostrarFilas(valorSeleccionado) {
 
-
             // Obtener el cuerpo de la tabla
             var tablaBody = document.querySelector(".tablaForm .tablaPersonas tbody");
         
             // Limpiar la tabla por si tiene datos anteriores
             tablaBody.innerHTML = "";
+
+            var checkboxes = document.querySelectorAll('.checkboxesFormDatos input[type="checkbox"]');
+            var columnasAMostrar = [];
+
+            checkboxes.forEach(function(checkbox) {
+                if (checkbox.checked) {
+                    // Si el checkbox está marcado, agregar el nombre de la columna a la lista de columnas a mostrar
+                    columnasAMostrar.push(checkbox.name);
+                }
+            });
             
             // Iterar sobre cada persona en el array `personas`
             personas.forEach(function(persona) {
                 // Crear una nueva fila
                 var fila = document.createElement("tr");
+
+        
 
                 if(valorSeleccionado == "filtroTodos"){
                     fila.innerHTML = `
@@ -352,7 +373,6 @@
                     }
                 }  
 
-
                 tablaBody.appendChild(fila);
                 
                 fila.addEventListener("dblclick", function() {
@@ -366,13 +386,10 @@
             document.querySelector(".tablaForm .tablaPersonas").style.display = "table"; 
         }
 
+
+
         document.querySelector(".tablaForm .tablaPersonas").addEventListener("dblclick", ocultarFormDatos);
         
-
-        function ocultarFormDatos(){
-            document.querySelector(".formDatos").style.display = "none";
-        }
-
 
         function mostrarDatosFormABM(persona) {
 
@@ -413,12 +430,14 @@
                 persona = new Ciudadano(id, nombre, apellido, fechaNacimiento, dniPais);
                 ciudadanos.push(persona);
                 personas.push(persona);
+                mostrarFilas(filtro.value);
             }
             else{
                 id = generarId();
                 persona = new Extranjero(id, nombre, apellido,fechaNacimiento,dniPais)
                 extranjeros.push(persona);
                 personas.push(persona);
+                mostrarFilas(filtro.value);
             
             }
             console.log(persona)
@@ -460,7 +479,7 @@
                     return;
                 }
 
-                console.log("Persona modificada:", personaAModificar);
+                mostrarFilas(filtro.value);
             }
 
                         
@@ -473,9 +492,9 @@
             
             if (index !== -1) {
                 personas.splice(index, 1);
-                console.log("Persona eliminada exitosamente");
+                mostrarFilas(filtro.value);    
             } else {
-                console.log("No se encontró una persona con el ID proporcionado");
+                alert("No se encontró una persona con el ID proporcionado");
             }
         
         }
@@ -498,8 +517,39 @@
                 promedio = extranjeros.reduce((suma, extranjero) => suma + extranjero.calcularEdad(), 0) / extranjeros.length;
             }
             
-            alert("El promedio es: " + promedio);
+            const inputEdadPromedio = document.getElementById('inputCalcEdadPromedio');
+            inputEdadPromedio.value = promedio;
         }  
+
+        const formDatos = document.querySelector('.formDatos');
+        const formABM = document.querySelector('.formABM');
+
+        function ocultarFormDatos() {
+            formDatos.classList.add('visible');
+            formABM.classList.add('visible');
+        }
+
+        function ocultarFormABM() {
+            formABM.classList.remove('visible');
+        }
+
+        function mostrarFormDatos() {
+            formDatos.classList.add('visible');
+        }
+
+        function mostrarFormABM() {
+            formABM.classList.add('visible');
+        }
+
+        function cancelarABM() {
+            ocultarFormABM();
+            mostrarFormDatos();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            mostrarFormDatos(); // Muestra el formulario de datos al cargar la página
+            mostrarFilas("filtroTodos");
+        });
 
 
     </script>
